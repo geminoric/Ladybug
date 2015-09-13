@@ -1,25 +1,15 @@
 #include "DDBInterface.h"
 #include <curl/curl.h>
 #include <iostream>
-
-void function_pt(char *ptr, size_t size, size_t nmemb, void *stream)
-{
-    std::cout << ptr << std::endl;
-}
+#include <string>
 
 int main()
 {
+  curl_global_init(CURL_GLOBAL_ALL);
   //Curl testing
-  CURL *curl;
-  curl = curl_easy_init();
-  if(curl)
-  {
-    curl_easy_setopt(curl, CURLOPT_URL, "www.google.com");
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, function_pt);
-    curl_easy_perform(curl);
-    curl_easy_cleanup(curl);
-  }
-
+  std::string foo;
+  Ladybug::GetContents(&foo, "www.google.com");
+  std::cout << foo << std::endl;
 
   return 0;
 }
