@@ -2,6 +2,12 @@
 #include <string>
 #include <iostream>
 #include <curl/curl.h>
+#include <alloca.h>
+#include <ctime>
+
+#define AMAZONDYNDBHOST "dynamodb.us-west-2.amazonaws.com"
+#define AMAZONCONTENTTYPE "application/x-amz-json-1.0"
+#define AMAZONCONNECTIONTYPE "Keep-Alive"
 
 namespace Ladybug
 {
@@ -13,25 +19,12 @@ namespace Ladybug
     return size * nmemb;
   }
 
-  //Returns true if contents gotten
-  bool GetContents(std::string *contents, const char *name_)
+  AmazonDynDBConn::AmazonDynDBConn() : curl_(curl_easy_init()), DynDBHost(AMAZONDYNDBHOST)
   {
-    CURL *curl_;
-    curl_ = curl_easy_init();
-    if(curl_)
-    {
-      curl_easy_setopt(curl_, CURLOPT_URL, name_);
-      curl_easy_setopt(curl_, CURLOPT_WRITEDATA, contents);
-      curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, write_callback);
-      if(curl_easy_perform(curl_))return false;
-      curl_easy_cleanup(curl_);
-      return true;
-    }
-    return false;
   }
 
-  //Does not create or destroy curl object
-  bool GetContents(std::string *contents, const char *name_, CURL *curl_)
+  //Returns true if contents gotten
+  bool AmazonDynDBConn::GetContents(std::string *contents, const char *name_)
   {
     if(curl_)
     {
@@ -45,9 +38,87 @@ namespace Ladybug
   }
 
   //Return true on success
-  bool CreateDatabase(const char *name_)
+  bool AmazonDynDBConn::CreateDatabase(const char *name_)
   {
     std::cout << name_;
     return true;
+  }
+
+  //Form header for canonical request
+  void AmazonDynDBConn::FormHeader(std::string *header, std::string *amz_target,
+                                    int content_length)
+  {
+    //Length of the data as a string for use later
+    std::string data_length;
+    //Temporary buffer for sprintf
+    char *temp_ccp = static_cast<char *>(alloca(100));
+    sprintf(temp_ccp, "%i", content_length);
+    data_length = temp_ccp;
+
+    time_t curtime;
+    time(&curtime);
+    tm *gmtTime = gmtime(&curtime);
+    //Format amz_date
+    sprintf(temp_ccp, "%04i%02i%02iT%02i%02i%02iZ", gmtTime->tm_year + 1900, gmtTime->tm_mon + 1,
+                gmtTime->tm_mday, gmtTime->tm_hour, gmtTime->tm_min, gmtTime->tm_sec);
+    //Used to store date and time
+    std::string amz_date = temp_ccp;
+
+    //Format date stamp
+
+    //Date without time
+    std::string date_stamp;
+
+    *header = "POST / HTTP/1.1\nhost: ";
+    *header += DynDBHost;
+    *header += '\n';
+    *header += amz_date + '\n' + *amz_target + '\n';
+    //*header += authorization
+    *header += "content-type: ";
+    *header += AMAZONCONTENTTYPE + '\n';
+    *header += "content-length: ";
+    *header += data_length;
+    *header += "\nconnection: ";
+    *header += AMAZONCONNECTIONTYPE;
+  }
+
+  //Form body for canonical request
+  void AmazonDynDBConn::FormBody(std::string *body)
+  {
+    *body = "";
+  }
+
+  bool AmazonDynDBConn::MakeTestPOSTRequest()
+  {
+
+    return true;
+  }
+
+  //Creates canonical request for use in creating auth signatuer
+  void FormCanonicalRequest(std::string *request, std::string *amz_date, int content_length)
+  {
+    //Temporary buffer for sprintf
+    char *temp_ccp = static_cast<char *>(alloca(100));
+
+    //Length of the data as a string for use later
+    sprintf(temp_ccp, "%i", content_length);
+    std::string data_length = temp_ccp;
+
+    *request = "POST https://";
+    *request += AMAZONDYNDBHOST;
+    *request += "HTTP/1.1" + '\n';
+    *request += "Host: ";
+    *request += AMAZONDYNDBHOST;
+    *request += "\nContent-Length: ";
+    *request += data_length;
+    *request += "\nContent-Type: ";
+    *request += AMAZONCONTENTTYPE;
+    *request += '\n' + *amz_date + '\n';
+  }
+
+  //Forms autorization signature used in POST header
+  void FormAuthorizationSignature(std::string *signature)
+  {
+    *signature = "";
   }
 }

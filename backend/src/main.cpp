@@ -7,9 +7,13 @@ int main()
 {
   curl_global_init(CURL_GLOBAL_ALL);
   //Curl testing
-  std::string foo;
-  Ladybug::GetContents(&foo, "www.google.com");
-  std::cout << foo << std::endl;
+  Ladybug::AmazonDynDBConn test;
+
+  std::string str;
+  std::string target("content-target:");
+  test.FormHeader(&str, &target, 10);
+
+  std::cout << str << std::endl;
 
   return 0;
 }
