@@ -16,7 +16,9 @@ namespace Ladybug
     bool GetContents(std::string *contents, const char *name_);
     //Return true on success
     bool CreateDatabase(const char *name_);
-    void FormHeader(std::string *header, std::string *amz_target,
+
+    //Creates canonical request for use in creating auth signatuer
+    void FormCanonicalRequest(std::string *request, std::string *amz_target,
                                     int content_length);
 
   private:
@@ -28,8 +30,8 @@ namespace Ladybug
     bool MakeTestPOSTRequest();
     //Forms autorization signature used in POST header
     void FormAuthorizationSignature(std::string *signature);
-    //Creates canonical request for use in creating auth signatuer
-    void FormCanonicalRequest(std::string *request, std::string *amz_date, int content_length);
+    void FormHeader(std::string *header, std::string *amz_target,
+                                    int content_length);
 
     CURL *curl_;
     std::string DynDBHost;

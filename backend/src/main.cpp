@@ -10,8 +10,8 @@ int main()
   Ladybug::AmazonDynDBConn test;
 
   std::string str;
-  std::string target("content-target:");
-  test.FormHeader(&str, &target, 10);
+  std::string target("TESTAMAZONTARGET");
+  test.FormCanonicalRequest(&str, &target, 10);
 
   std::cout << str << std::endl;
 

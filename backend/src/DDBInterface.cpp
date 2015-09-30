@@ -64,19 +64,15 @@ namespace Ladybug
     //Used to store date and time
     std::string amz_date = temp_ccp;
 
-    //Format date stamp
-
-    //Date without time
-    std::string date_stamp;
-
     *header = "POST / HTTP/1.1\nhost: ";
     *header += DynDBHost;
-    *header += '\n';
-    *header += amz_date + '\n' + *amz_target + '\n';
+    *header += "\nx-amz-date: ";
+    *header += amz_date + "\nx-amz-target: " + *amz_target + '\n';
     //*header += authorization
     *header += "content-type: ";
-    *header += AMAZONCONTENTTYPE + '\n';
-    *header += "content-length: ";
+    *header += AMAZONCONTENTTYPE;
+    //*header += '\n';
+    *header += "\ncontent-length: ";
     *header += data_length;
     *header += "\nconnection: ";
     *header += AMAZONCONNECTIONTYPE;
@@ -95,10 +91,25 @@ namespace Ladybug
   }
 
   //Creates canonical request for use in creating auth signatuer
-  void FormCanonicalRequest(std::string *request, std::string *amz_date, int content_length)
+  void AmazonDynDBConn::FormCanonicalRequest(std::string *request, std::string *amz_target,
+                                    int content_length)
   {
     //Temporary buffer for sprintf
     char *temp_ccp = static_cast<char *>(alloca(100));
+
+    time_t curtime;
+    time(&curtime);
+    tm *gmtTime = gmtime(&curtime);
+    //Format amz_date
+    sprintf(temp_ccp, "%04i%02i%02iT%02i%02i%02iZ", gmtTime->tm_year + 1900, gmtTime->tm_mon + 1,
+                gmtTime->tm_mday, gmtTime->tm_hour, gmtTime->tm_min, gmtTime->tm_sec);
+    //Used to store date and time
+    std::string amz_date = temp_ccp;
+
+    //Format date stamp
+
+    //Date without time
+    std::string date_stamp;
 
     //Length of the data as a string for use later
     sprintf(temp_ccp, "%i", content_length);
@@ -106,18 +117,20 @@ namespace Ladybug
 
     *request = "POST https://";
     *request += AMAZONDYNDBHOST;
-    *request += "HTTP/1.1" + '\n';
+    *request += "/ HTTP/1.1\n";
     *request += "Host: ";
     *request += AMAZONDYNDBHOST;
     *request += "\nContent-Length: ";
     *request += data_length;
     *request += "\nContent-Type: ";
     *request += AMAZONCONTENTTYPE;
-    *request += '\n' + *amz_date + '\n';
+    *request += "\nX-Amz-Date: ";
+    *request += amz_date;
+    *request += '\n';
   }
 
   //Forms autorization signature used in POST header
-  void FormAuthorizationSignature(std::string *signature)
+  void AmazonDynDBConn::FormAuthorizationSignature(std::string *signature)
   {
     *signature = "";
   }
