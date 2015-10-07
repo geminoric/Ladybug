@@ -1,7 +1,17 @@
 #include <iostream>
 #include <string>
+#include <string.h>
+#include <signal.h>
+#include <onion/log.h>
+#include <onion/onion.h>
+#include <onion/shortcuts.h>
+#include <alloca.h>
+#include "ladybugusersconn.h"
 
-#define AWSS3HOST "s3-us-west-2.amazonaws.com"
+char AMAZONS3HOST[] = "s3-us-west-1.amazonaws.com";
+char USERBUCKET[] = "ladybugusers";
+
+#define DEBUGMODE 1
 
 extern "C"
 {
@@ -9,22 +19,20 @@ extern "C"
 }
 
 
-
 int main()
 {
-  //Init aws
+  //AWS INIT
   aws_init();
   //aws_set_debug(0);
   aws_set_debug(1);//DEBUG MODE
 
-  char *s3Host = AWSS3HOST;
-  s3_set_host(s3Host);
+  s3_set_host(AMAZONS3HOST);
   //Get credentials
   char *key = new char[100];
   char *keyid = new char[100];
   std::cin.width(99);
   //Startup message
-  std::cout << "Ladybug Backend 0.0.1\nPlease enter your key:";
+  std::cout << "Ladybug Backend 0.0.1\nPlease enter your authentication key:";
   std::cin >> key;
   std::cout << "Please enter your keyid:";
   std::cin >> keyid;
@@ -32,8 +40,13 @@ int main()
   aws_set_key(key);
   aws_set_keyid(keyid);
 
-  char *targBucket = "testbucket.tester";
-  s3_set_bucket(targBucket);
+  s3_set_bucket(USERBUCKET);
+  //AWS INIT OVER
+
+  Ladybug::AWSLadybugConn AWSConnection;
+  AWSConnection.SetDataToFile("test/testfile", "ohaidere");
+  
 
   return 0;
 }
+
