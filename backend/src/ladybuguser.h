@@ -5,8 +5,11 @@
 #include <vector>
 #include "ladybugobjects.h"
 
+
 namespace Ladybug
 {
+  class AWSLadybugConn;
+
   typedef int UserID;
   typedef int PhotoID;
   typedef int CommentID;
@@ -19,9 +22,16 @@ namespace Ladybug
   {
   public:
     //Used for creating a new user, login token is set to user's session login token
-    LadybugUser(std::string email, std::string profname, std::string hashedpwd, PhotoID profilepic, int *logintoken_);
+    LadybugUser(std::string email, std::string profname, std::string plaintextPass,
+                   PhotoID profilepic, int *logintoken_);
     //Used for loading a user from memory
     LadybugUser(std::string email, std::string hashedpwd, int logintoken_);
+
+    //Saves the user to the database
+    void SaveUser(AWSLadybugConn *conn);
+    //Removes the user from the database
+    void DeleteUser(AWSLadybugConn *conn);
+
 
   private:
     UserID userid_;
@@ -30,12 +40,12 @@ namespace Ladybug
     //User information
     std::string emailaddr;
     std::string profilename;
-    std::string pwhash;
+    char pwhash[42];
     PhotoID profilePicID;
     std::vector<UserID> peopleFollowing;
     std::vector<UserID> followers;
     //List of comments stored under this user
-    std::vector<Ladybug::Comment> userComments;
+    std::vector<CommentID> userComments;
     std::vector<PhotoID> photos;
 
 

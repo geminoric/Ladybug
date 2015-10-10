@@ -39,6 +39,7 @@ void onexit(int _){
 
 int main()
 {
+  /*
   //onion http testing
   o=onion_new(O_ONE_LOOP);
   onion_url *urls=onion_root_url(o);
@@ -65,6 +66,7 @@ int main()
   onion_listen(o);
 
   onion_free(o);
+  */
 
   /*
   aws_init();

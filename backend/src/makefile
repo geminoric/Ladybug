@@ -3,7 +3,7 @@
 CC=g++-4.9
 CFLAGS=-c -g 
 ERASE=rm
-OBJECTS= $(DIR)main.o $(DIR)aws4c.o $(DIR)ladybugusersconn.o $(DIR)ladybuguser.o $(DIR)ladybugobjects.o $(DIR)sha1.o
+OBJECTS= $(DIR)main.o $(DIR)aws4c.o $(DIR)ladybuguser.o $(DIR)ladybugusersconn.o $(DIR)ladybugobjects.o $(DIR)sha1.o
 DIR=gnu/
 EXE=$(DIR)Ladybug
 
@@ -15,14 +15,14 @@ $(EXE) : $(OBJECTS)
 $(DIR)main.o : main.cpp
 	$(CC) -o $(DIR)main.o $(CFLAGS) main.cpp
 
+$(DIR)ladybuguser.o : ladybuguser.cpp ladybuguser.h
+	$(CC) -o $(DIR)ladybuguser.o $(CFLAGS) ladybuguser.cpp
+
 $(DIR)ladybugusersconn.o : ladybugusersconn.cpp ladybugusersconn.h
 	$(CC) -o $(DIR)ladybugusersconn.o $(CFLAGS) ladybugusersconn.cpp
 
 $(DIR)sha1.o : sha1.cpp sha1.h
 	$(CC) -o $(DIR)sha1.o $(CFLAGS) sha1.cpp
-
-$(DIR)ladybuguser.o : ladybuguser.cpp ladybuguser.h
-	$(CC) -o $(DIR)ladybuguser.o $(CFLAGS) ladybuguser.cpp
 
 $(DIR)ladybugobjects.o : ladybugobjects.cpp ladybugobjects.h
 	$(CC) -o $(DIR)ladybugobjects.o $(CFLAGS) ladybugobjects.cpp

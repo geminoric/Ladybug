@@ -44,8 +44,12 @@ int main()
   //AWS INIT OVER
 
   Ladybug::AWSLadybugConn AWSConnection;
-  AWSConnection.SetDataToFile("test/testfile", "ohaidere");
-  
+
+  //test create a user
+  int logintoken = 0;
+  Ladybug::LadybugUser testusr("testemail@test.com", "Raymond", "password", 42, &logintoken);
+  testusr.SaveUser(&AWSConnection);
+  std::cout << "Login Token: " << logintoken << std::endl;
 
   return 0;
 }

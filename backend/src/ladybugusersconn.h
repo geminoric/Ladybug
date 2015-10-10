@@ -14,12 +14,13 @@ namespace Ladybug
     int SetDataToFile(std::string filePathName, std::string data);
     int DeleteFile(std::string filePathName);
     int ReadFile(std::string filePathName, std::string *data);
+    
+    //Current amount of total users, used for giving new user ids, MAKE SURE TO UPDATE DURING SERVER INIT
+    static int nextUserID;
 
 
   private:
     std::map<int, Ladybug::LadybugUser> loadedUsers;
-    //Current amount of total users, used for giving new user ids, MAKE SURE TO UPDATE DURING SERVER INIT
-    int nextUserID;
 
   };
 
