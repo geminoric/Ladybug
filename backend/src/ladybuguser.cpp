@@ -2,6 +2,7 @@
 #include "ladybugusersconn.h"
 #include "sha1.h"
 #include <string.h>
+#include <string>
 #include <stdio.h>
 #include <stdlib.h>
 #include <alloca.h>
@@ -11,6 +12,37 @@
 
 namespace Ladybug
 {
+  //Function assumes userID is valid
+  //Returns data from a user id file, given a parameter to search for, such as pwhash:
+  std::string AWSLadybugConn::GetDataFromUserIDFile(int userID, std::string searchTerm)
+  {
+    //Read in user id file
+    std::string data;
+    char *id = (char *)alloca(50);
+    sprintf(id, "Users/%i", userID);
+    AWSLadybugConn::ReadFile(id, &data);
+    //Position in file of hashed password
+    int hashPos = data.find(searchTerm) + searchTerm.size() - 1;
+    //Find how much data until end of line
+    int i = 0;
+    char buffer[200];
+    while(data[hashPos + ++i] != '\n')
+    {
+      //Load each character into the buffer
+      buffer[i - 1] = data[hashPos + i];
+    }
+    buffer[i - 1] = 0;
+
+    return buffer;
+  }
+  //Used for user authentication, returns true if authenticated
+  //This function assumes userid file already exists
+  bool authenticateUser(int userID, std::string hashedpwd)
+  {
+    if(AWSLadybugConn::GetDataFromUserIDFile(userID, "pwhash:") == hashedpwd)return true;
+    return false;
+  }
+
   LadybugUser::LadybugUser(std::string email, std::string profname, std::string plaintextPass,
                    PhotoID profilepic, int *logintoken_)
                 :   emailaddr(email), profilename(profname), profilePicID(profilepic),
@@ -30,7 +62,47 @@ namespace Ladybug
     login_token = rand();
     //Return the token to the user
     *logintoken_ = login_token;
+    AWSLadybugConn::incrementNextUserID();
+    //Add user to ladybugusers vector
+    AWSLadybugConn::AddUserToSystem(*this);
  }
+
+  //Used for loading a user from memory
+  //logintoken_ used for error codes
+  //-1  : User not found
+  //-2  : Authentication error
+  LadybugUser::LadybugUser(int userID, std::string hashedpwd, int *logintoken_) : userid_(userID)
+  {
+    std::string data;
+    char *id = (char *)alloca(50);
+    sprintf(id, "Users/%i", userID);
+    //Return -1 if the user's file was not found
+    if(AWSLadybugConn::ReadFile(id, &data))
+    {
+      *logintoken_ = -1;
+      return;
+    }
+    //Authenticate user
+    if(!authenticateUser(userID, hashedpwd))
+    {
+      *logintoken_ = -2;
+      return;
+    }
+
+    //Load all the user's data
+    emailaddr = AWSLadybugConn::GetDataFromUserIDFile(userID, "email:");
+    profilename = AWSLadybugConn::GetDataFromUserIDFile(userID, "profname:");
+    std::string profID = AWSLadybugConn::GetDataFromUserIDFile(userID, "profpicID:");
+    profilePicID = atoi(profID.c_str());
+
+    //IMPORTANT - ADD FUNCTIONS HERE TO IMPORT DATA INTO THE VECTORS
+
+    login_token = rand();
+    *logintoken_ = login_token;
+
+    //Add user to ladybugusers vector
+    AWSLadybugConn::AddUserToSystem(*this);
+  }
 
   void vecToData(std::vector<int> &vec, char *data)
   {

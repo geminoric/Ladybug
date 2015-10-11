@@ -21,10 +21,11 @@ extern "C"
 
 int main()
 {
+  srand(time(0));
   //AWS INIT
   aws_init();
-  //aws_set_debug(0);
-  aws_set_debug(1);//DEBUG MODE
+  aws_set_debug(0);
+  //aws_set_debug(1);//DEBUG MODE
 
   s3_set_host(AMAZONS3HOST);
   //Get credentials
@@ -32,9 +33,9 @@ int main()
   char *keyid = new char[100];
   std::cin.width(99);
   //Startup message
-  std::cout << "Ladybug Backend 0.0.1\nPlease enter your authentication key:";
+  std::cout << "Ladybug Backend 0.0.1\nEnter your authentication key:";
   std::cin >> key;
-  std::cout << "Please enter your keyid:";
+  std::cout << "Enter your keyid:";
   std::cin >> keyid;
   //Set credentials
   aws_set_key(key);
@@ -47,9 +48,10 @@ int main()
 
   //test create a user
   int logintoken = 0;
-  Ladybug::LadybugUser testusr("testemail@test.com", "Raymond", "password", 42, &logintoken);
-  testusr.SaveUser(&AWSConnection);
-  std::cout << "Login Token: " << logintoken << std::endl;
+  //Ladybug::LadybugUser testusr("testemail@test.com", "Raymond", "password", 42, &logintoken);
+  //testusr.SaveUser(&AWSConnection);
+  
+
 
   return 0;
 }

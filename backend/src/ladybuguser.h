@@ -25,12 +25,13 @@ namespace Ladybug
     LadybugUser(std::string email, std::string profname, std::string plaintextPass,
                    PhotoID profilepic, int *logintoken_);
     //Used for loading a user from memory
-    LadybugUser(std::string email, std::string hashedpwd, int logintoken_);
+    LadybugUser(UserID userID, std::string hashedpwd, int *logintoken_);
 
     //Saves the user to the database
     void SaveUser(AWSLadybugConn *conn);
     //Removes the user from the database
     void DeleteUser(AWSLadybugConn *conn);
+    UserID GetID() { return userid_; }
 
 
   private:

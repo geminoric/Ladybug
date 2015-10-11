@@ -1,6 +1,9 @@
 #include "ladybugusersconn.h"
 #include "ladybuguser.h"
 #include <string>
+#include <alloca.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 extern "C"
 {
@@ -9,13 +12,37 @@ extern "C"
 
 namespace Ladybug
 {
-
+  std::map<int, LadybugUser *> loadedUsers;
   int AWSLadybugConn::nextUserID = 0;
+
+  //Gets the current total amount of users and sets up the next user ID
+  //Used only for initialization
+  void updateNextUserID()
+  {
+    std::string data;
+    AWSLadybugConn::ReadFile("Users/nextID.dat", &data);
+    AWSLadybugConn::nextUserID = atoi(data.c_str());
+  }
+
+  //Increases the next user ID to be assigned
+  void AWSLadybugConn::incrementNextUserID()
+  {
+    ++AWSLadybugConn::nextUserID;
+    char *id = (char *)alloca(100);
+    sprintf(id, "%i", AWSLadybugConn::nextUserID );
+    AWSLadybugConn::SetDataToFile("Users/nextID.dat", id);
+  }
 
   AWSLadybugConn::AWSLadybugConn()
   {
     //Count how many users have been created and set it to the next user ID
-    nextUserID = 0;
+    updateNextUserID();
+  }
+
+  //Load a user into the system
+  int AWSLadybugConn::LoadUser(std::string email, std::string plainttextpwd)
+  {
+    
   }
 
 
@@ -64,5 +91,11 @@ namespace Ladybug
 
     aws_iobuf_free(buffer);
     return ret;
+  }
+
+  //Adds a user to the logged in system
+  void AWSLadybugConn::AddUserToSystem(LadybugUser usr)
+  {
+    loadedUsers[usr.GetID()] = &usr;
   }
 }
