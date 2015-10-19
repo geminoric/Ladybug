@@ -118,7 +118,12 @@ namespace Ladybug
     }
   }
 
- //Saves the user to the database
+  Comment LadybugUser::GetComment(int index)
+  {
+    return userComments[index];
+  }
+
+  //Saves the user to the database
    void LadybugUser::SaveUser(AWSLadybugConn *conn)
    {
     //Getting data from vectors to be saved

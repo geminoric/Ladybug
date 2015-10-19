@@ -26,6 +26,7 @@ namespace Ladybug
                    PhotoID profilepic, int *logintoken_);
     //Used for loading a user from memory
     LadybugUser(UserID userID, std::string hashedpwd, int *logintoken_);
+    Comment GetComment(int index);
 
     //Saves the user to the database
     void SaveUser(AWSLadybugConn *conn);
@@ -46,7 +47,7 @@ namespace Ladybug
     std::vector<UserID> peopleFollowing;
     std::vector<UserID> followers;
     //List of comments stored under this user
-    std::vector<CommentID> userComments;
+    std::vector<Comment> userComments;
     std::vector<PhotoID> photos;
 
 

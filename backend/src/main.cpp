@@ -32,24 +32,38 @@ int main()
   char *key = new char[100];
   char *keyid = new char[100];
   std::cin.width(99);
+
+  //Load auth data
+  aws_set_key((char *)"hOD7J8sYCLfZ1ojABdRlyP/TqHRDgy1RyeBcETOh");
+  aws_set_keyid((char *)"AKIAJR6ERRZVDOG6EYXA");
+
+
   //Startup message
-  std::cout << "Ladybug Backend 0.0.1\nEnter your authentication key:";
+  /*std::cout << "Ladybug Backend 0.0.1\nEnter your authentication key:";
   std::cin >> key;
   std::cout << "Enter your keyid:";
-  std::cin >> keyid;
+  std::cin >> keyid;*/
   //Set credentials
-  aws_set_key(key);
-  aws_set_keyid(keyid);
+ /* aws_set_key(key);
+  aws_set_keyid(keyid);*/
 
   s3_set_bucket(USERBUCKET);
   //AWS INIT OVER
 
   Ladybug::AWSLadybugConn AWSConnection;
 
-  //test create a user
-  int logintoken = 0;
-  //Ladybug::LadybugUser testusr("testemail@test.com", "Raymond", "password", 42, &logintoken);
-  //testusr.SaveUser(&AWSConnection);
+  //test load a user
+  int logintoken;
+  AWSConnection.LoadUser("testemail1@test.com", "password1", &logintoken);
+  std::cout << "Login token: " << logintoken << std::endl;
+
+  /*Ladybug::LadybugUser testusr("testemail1@test.com", "Raymond1", "password1", 42, &logintoken);
+  testusr.SaveUser(&AWSConnection);
+  Ladybug::LadybugUser testusr1("testemail2@test.com", "Raymond2", "password2", 42, &logintoken);
+  testusr1.SaveUser(&AWSConnection);
+  Ladybug::LadybugUser testusr2("testemail3@test.com", "Raymon3", "password3", 42, &logintoken);
+  testusr2.SaveUser(&AWSConnection);*/
+
   
 
 

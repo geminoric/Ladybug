@@ -1,9 +1,11 @@
 #include "ladybugusersconn.h"
 #include "ladybuguser.h"
 #include <string>
+#include <string.h>
 #include <alloca.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "sha1.h"
 
 extern "C"
 {
@@ -39,12 +41,50 @@ namespace Ladybug
     updateNextUserID();
   }
 
-  //Load a user into the system
-  int AWSLadybugConn::LoadUser(std::string email, std::string plainttextpwd)
+  //Load a user into the system, return -1 on fail, logintoken__ is the returned logintoken
+  int AWSLadybugConn::LoadUser(std::string email, std::string plaintextpwd, int *logintoken__)
   {
-    
+    //Store the final hashed password to compare
+    char hashedpw[42];
+
+    int userID = AWSLadybugConn::GetUserIDFromEmail(email);
+    if(userID == -1)return -1;
+
+    //Hash the password and compare to stored hash
+    unsigned char tempHashStorage[20];
+    //Salt the plaintext password with the user's userID
+    char *saltedPlaintext = (char *)alloca(50);
+    sprintf(saltedPlaintext, "%i", userID);
+    strcat(saltedPlaintext, plaintextpwd.c_str());
+    //Hash the salted password
+    sha1::calc(saltedPlaintext,  strlen(saltedPlaintext), tempHashStorage);
+    sha1::toHexString(tempHashStorage, hashedpw);
+    hashedpw[42] = 0;
+
+    int logintoken = -1;
+    //Login user
+    LadybugUser *usr_ = new LadybugUser(userID, hashedpw, &logintoken);
+    //If login token failed return -1
+    if(logintoken < 0)return -1;
+    else
+    {
+      *logintoken__ = logintoken;
+      return userID;
+    }
+
   }
 
+
+  //Returns -1 if failed to find email
+  int AWSLadybugConn::GetUserIDFromEmail(std::string email_)
+  {
+    //Loop through loading users and checking the email for a match
+    for(int i = 0;i < nextUserID; ++i)
+    {
+      if(email_ == GetDataFromUserIDFile(i, "email:"))return i;
+    }
+    return -1;
+  }
 
   //Functions return the return value from network operation
   //Sets a file to the data, creates a new file if one doesn't exist
@@ -93,8 +133,15 @@ namespace Ladybug
     return ret;
   }
 
+  LadybugUser* AWSLadybugConn::GetUser(int userID)
+  {
+    if(userID < 0 || userID > loadedUsers.size());
+      return 0;
+    return loadedUsers[userID];
+  }
+
   //Adds a user to the logged in system
-  void AWSLadybugConn::AddUserToSystem(LadybugUser usr)
+  void AWSLadybugConn::AddUserToSystem(LadybugUser &usr)
   {
     loadedUsers[usr.GetID()] = &usr;
   }

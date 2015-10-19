@@ -1,7 +1,7 @@
 # Macros ========================================
 
 CC=g++-4.9
-CFLAGS=-c -g 
+CFLAGS=-c -g
 ERASE=rm
 OBJECTS= $(DIR)main.o $(DIR)aws4c.o $(DIR)ladybuguser.o $(DIR)ladybugusersconn.o $(DIR)ladybugobjects.o $(DIR)sha1.o
 DIR=gnu/

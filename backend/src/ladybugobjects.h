@@ -15,10 +15,15 @@ namespace Ladybug
   class Comment
   {
   public:
-    Comment(CommentID comID, UserID poster, std::string commtext);
+    //Make a new comment
+    Comment(UserID poster, std::string commtext, int cid);
+    //returns true if comment id is in use
+    bool isIDUsed(CommentID comID, UserID userID);
+    commentID GetID();
 
   private:
     CommentID id;
+    int chainID;
     UserID commentPoster;
     std::string comment;
   };
