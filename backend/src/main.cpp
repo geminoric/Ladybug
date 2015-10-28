@@ -34,8 +34,8 @@ int main()
   std::cin.width(99);
 
   //Load auth data
-  aws_set_key((char *)"hOD7J8sYCLfZ1ojABdRlyP/TqHRDgy1RyeBcETOh");
-  aws_set_keyid((char *)"AKIAJR6ERRZVDOG6EYXA");
+  aws_set_key((char *)"");
+  aws_set_keyid((char *)"");
 
 
   //Startup message
@@ -51,7 +51,6 @@ int main()
   //AWS INIT OVER
 
   Ladybug::AWSLadybugConn AWSConnection;
-
   //test load a user
   int logintoken;
   AWSConnection.LoadUser("testemail1@test.com", "password1", &logintoken);

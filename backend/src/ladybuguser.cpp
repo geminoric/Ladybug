@@ -117,11 +117,23 @@ namespace Ladybug
       strcat(data, ":");
     }
   }
+  void vecToData(std::vector<std::string> &vec, char *data)
+  {
+    data[0] = 0;
+    for(int i = 0;i < vec.size();++i)
+    {
+      strcat(data, vec[i].c_str());
+      //Add data to seperate each vector component
+      strcat(data, ":");
+    }
+  }
 
+/*
+  //Return comment with filename, assume user is authenticated
   Comment LadybugUser::GetComment(int index)
   {
     return userComments[index];
-  }
+  }*/
 
   //Saves the user to the database
    void LadybugUser::SaveUser(AWSLadybugConn *conn)
@@ -136,7 +148,6 @@ namespace Ladybug
     vecToData(peopleFollowing, peoFollowing);
     vecToData(followers, peoFollowers);
     vecToData(userComments, comments);
-    vecToData(photos, photoids);
 
     char *dataToSave = (char *)alloca(1000);
     //Create data format to be saved

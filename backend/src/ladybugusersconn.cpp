@@ -119,6 +119,7 @@ namespace Ladybug
     IOBuf *buffer = aws_iobuf_new();
     char *fileName = const_cast<char *>(filePathName.c_str());
     int ret = s3_get(buffer, fileName);
+
     while(true)
     {
       //Read in 1024 bytes at a time
@@ -130,6 +131,9 @@ namespace Ladybug
     }
 
     aws_iobuf_free(buffer);
+
+    //If first character is '<', return -1
+    if((*data)[0] == '<')return -1;
     return ret;
   }
 

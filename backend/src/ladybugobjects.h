@@ -5,7 +5,7 @@
 
 typedef int UserID;
 typedef int PhotoID;
-typedef int CommentID;
+typedef std::string CommentID;
 //How deep in the comment response chain the comment is, 0 for root comment
 typedef int CommentChainID;
 typedef int LadybugCredits;
@@ -17,9 +17,12 @@ namespace Ladybug
   public:
     //Make a new comment
     Comment(UserID poster, std::string commtext, int cid);
-    //returns true if comment id is in use
-    bool isIDUsed(CommentID comID, UserID userID);
-    commentID GetID();
+    CommentID GetID();
+    void saveComment();
+
+    //Create random 20 letter (a-Z ex. aBjkA...) and return one that is available
+    static std::string generateUnusedFileName(const std::string &folderPath);
+    static bool isFilenameUsed(const std::string &filename);
 
   private:
     CommentID id;

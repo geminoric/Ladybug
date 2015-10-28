@@ -12,7 +12,7 @@ namespace Ladybug
 
   typedef int UserID;
   typedef int PhotoID;
-  typedef int CommentID;
+  typedef std::string CommentID;
   //How deep in the comment response chain the comment is, 0 for root comment
   typedef int CommentChainID;
   typedef int LadybugCredits;
@@ -46,9 +46,8 @@ namespace Ladybug
     PhotoID profilePicID;
     std::vector<UserID> peopleFollowing;
     std::vector<UserID> followers;
-    //List of comments stored under this user
-    std::vector<Comment> userComments;
-    std::vector<PhotoID> photos;
+    //List of comment ids stored under this user
+    std::vector<CommentID> userComments;
 
 
   };
